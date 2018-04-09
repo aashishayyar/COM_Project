@@ -1,0 +1,8 @@
+LIBRARY AggregationClient
+EXPORTS
+	Initialize					PRIVATE
+	UnInitialize				PRIVATE
+	SumOfTwoIntegers			PRIVATE
+	SubtractionOfTwoIntegers	PRIVATE
+	MultiplicationOfTwoIntegers	PRIVATE
+	DivisionOfTwoIntegers		PRIVATE
