@@ -23,13 +23,15 @@ IDivision 		*pIDivision			= NULL;
 
 BOOL WINAPI DllMain(HINSTANCE hDll, DWORD dwReason, LPVOID Reserved)
 {
-	void	InitializeDefaultInterface(void);
+	void	Initialize(void);
+	void 	UnInitialize(void);
 	void 	SafeInterfaceRelease(void);
 
 	switch(dwReason)
 	{
 		case DLL_PROCESS_ATTACH:
 				ghModule = hDll;
+				Initialize();
 			break;
 		case DLL_THREAD_ATTACH:
 			break;
@@ -37,6 +39,8 @@ BOOL WINAPI DllMain(HINSTANCE hDll, DWORD dwReason, LPVOID Reserved)
 			break; 	
 		case DLL_PROCESS_DETACH:
 				CoUninitialize();
+				UnInitialize();
+				SafeInterfaceRelease();	
 			break;		
 	}
 	return(TRUE);
@@ -103,8 +107,6 @@ void Initialize(void)
 	}	
 	//	MessageBox(NULL, TEXT("ContainmentClient : Initialize : CoInitialize succesful"), TEXT("Containment"), NULL);			
 
-	InitializeDefaultInterface();
-
 	//	MessageBox(NULL, TEXT("ContainmentClient : Initialize : Leaving"), TEXT("Leaving"), NULL);
 
 }
@@ -145,7 +147,6 @@ void UnInitialize(void)
 		MessageBox(NULL, TEXT("Containment UnInitialization Failed"), TEXT("Containment : Error"), NULL);
 	}
 
-	SafeInterfaceRelease();	
 }
 
 int SumOfTwoIntegers(int iNum1, int iNum2)

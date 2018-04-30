@@ -59,10 +59,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstace, LPSTR lpCmdLine,
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 {
-	void InitializeServers(void);
-	void FreeServers(void);
-	void SafeInterfaceRelease(void);
-
 	HRESULT hr;
 	int iNum1, iNum2, iSum;
 	TCHAR str[255];
@@ -78,7 +74,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 		case WM_CREATE:
 
 //				MessageBox(NULL, TEXT("Going to initialize ... "), TEXT("Error"), NULL);
-				InitializeServers();
+//				InitializeServers();
 //				MessageBox(NULL, TEXT("Initialization done ..."), TEXT("Error"), NULL);
 			break;
 		
@@ -86,12 +82,22 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 				switch(wParam)
 				{
 					case 0x31: // 1 ClassFactory
+							hClassFactoryLib = LoadLibrary(TEXT("..\\01_ClassFactory\\Client\\DLL\\ClassFactoryClient.dll"));	
+							if (hClassFactoryLib == NULL)
+								MessageBox(NULL, TEXT("Bare Client : LoadServers : ClassFactory : Error"), TEXT("Error"), NULL);
+
 							Sum = (FuncPtr)GetProcAddress(hClassFactoryLib, "SumOfTwoIntegers");
 							Sub = (FuncPtr)GetProcAddress(hClassFactoryLib, "SubtractionOfTwoIntegers");
 							Sum(160, 240);
 							Sub(430, 270);
+
+							FreeLibrary(hClassFactoryLib);
 						break;
 					case 0x32: // 2 Containment
+							hContainmentLib = LoadLibrary(TEXT("..\\02_Containment\\Client\\DLL\\ContainmentClient.dll"));	
+							if (hContainmentLib == NULL)
+								MessageBox(NULL, TEXT("Bare Client : LoadServers : Containment : Error"), TEXT("Error"), NULL);
+
 							Sum = (FuncPtr)GetProcAddress(hContainmentLib, "SumOfTwoIntegers");
 							Sub = (FuncPtr)GetProcAddress(hContainmentLib, "SubtractionOfTwoIntegers");
 							Mul = (FuncPtr)GetProcAddress(hContainmentLib, "MultiplicationOfTwoIntegers");
@@ -100,8 +106,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 							Sub(470, 230);
 							Mul(234, 987);
 							Div(987, 543);
+
+							FreeLibrary(hContainmentLib);
 						break;	
 					case 0x33: // 3 Aggregation
+							hAggregationLib = LoadLibrary(TEXT("..\\03_Aggregation\\Client\\DLL\\AggregationClient.dll"));	
+							if (hAggregationLib == NULL)
+								MessageBox(NULL, TEXT("Bare Client : LoadServers : Aggregation : Error"), TEXT("Error"), NULL);
+							
 							Sum = (FuncPtr)GetProcAddress(hAggregationLib, "SumOfTwoIntegers");
 							Sub = (FuncPtr)GetProcAddress(hAggregationLib, "SubtractionOfTwoIntegers");
 							Mul = (FuncPtr)GetProcAddress(hAggregationLib, "MultiplicationOfTwoIntegers");
@@ -110,22 +122,42 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 							Sub(40, 20);
 							Mul(34, 98);
 							Div(97, 43);
+
+							FreeLibrary(hAggregationLib);
 						break;	
 					case 0x34:
+							hExeServerLib = LoadLibrary(TEXT("..\\04_ExeServer\\Client\\DLL\\ExeClient.dll"));	
+							if (hExeServerLib == NULL)
+								MessageBox(NULL, TEXT("Bare Client : LoadServers : ExeServer : Error"), TEXT("Error"), NULL);
+
 							Sum = (FuncPtr)GetProcAddress(hExeServerLib, "SumOfTwoIntegers");
-							Sub = (FuncPtr)GetProcAddress(hExeServerLib, "SubtractionOfTwoIntegers");
+							//Sub = (FuncPtr)GetProcAddress(hExeServerLib, "SubtractionOfTwoIntegers");
 							Sum(98, 25);
-							Sub(71, 94);
+							//Sub(71, 94);
+						
+							FreeLibrary(hExeServerLib);	
 						break;
 					case 0x35:
+							hAutomationLib = LoadLibrary(TEXT("..\\05_Automation\\Client\\DLL\\AutomationClient.dll"));	
+							if (hAutomationLib == NULL)
+								MessageBox(NULL, TEXT("Bare Client : LoadServers : Automation : Error"), TEXT("Error"), NULL);
+
 							Sum = (FuncPtr)GetProcAddress(hAutomationLib, "SumOfTwoIntegers");
 							Sub = (FuncPtr)GetProcAddress(hAutomationLib, "SubtractionOfTwoIntegers");
 							Sum(58, 32);
 							Sub(91, 56);
+						
+							FreeLibrary(hAutomationLib);	
 						break;
 					case 0x36:
+							hMonikerLib = LoadLibrary(TEXT("..\\06_Moniker\\Client\\DLL\\MonikerClient.dll"));	
+							if (hMonikerLib == NULL)
+								MessageBox(NULL, TEXT("Bare Client : LoadServers : Moniker : Error"), TEXT("Error"), NULL);
+
 							GetOddNum = (FuncPtr2)GetProcAddress(hMonikerLib, "GetNextOddNumber");
 							GetOddNum(43);
+
+							FreeLibrary(hMonikerLib);	
 						break;		
 					case 0x1B:
 							DestroyWindow(hwnd);
@@ -134,116 +166,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam)
 			break;
 
 		case WM_DESTROY:
-				FreeServers();
 				PostQuitMessage(0);
 			break;	
 	}
 	return(DefWindowProc(hwnd, iMsg, wParam, lParam));
 }
 
-void InitializeServers(void)
-{
-	typedef void(*fPtr)(void);
-
-//	ClassFactory : Initialize
-	hClassFactoryLib = LoadLibrary(TEXT("..\\01_ClassFactory\\Client\\DLL\\ClassFactoryClient.dll"));	
-	if (hClassFactoryLib == NULL)
-		MessageBox(NULL, TEXT("Bare Client : LoadServers : ClassFactory : Error"), TEXT("Error"), NULL);
-
-	fPtr InitClassFactory;
-	InitClassFactory = (fPtr)GetProcAddress(hClassFactoryLib, "Initialize");
-	InitClassFactory();
-
-// 	Containment : Initialize
-	hContainmentLib = LoadLibrary(TEXT("..\\02_Containment\\Client\\DLL\\ContainmentClient.dll"));	
-	if (hContainmentLib == NULL)
-		MessageBox(NULL, TEXT("Bare Client : LoadServers : Containment : Error"), TEXT("Error"), NULL);
-
-	fPtr InitContainment;
-	InitContainment = (fPtr)GetProcAddress(hContainmentLib, "Initialize");
-	InitContainment();
-
-//  Aggregation : Initialize
-	hAggregationLib = LoadLibrary(TEXT("..\\03_Aggregation\\Client\\DLL\\AggregationClient.dll"));	
-	if (hAggregationLib == NULL)
-		MessageBox(NULL, TEXT("Bare Client : LoadServers : Aggregation : Error"), TEXT("Error"), NULL);
-
-	fPtr InitAggregation;
-	InitAggregation = (fPtr)GetProcAddress(hAggregationLib, "Initialize");
-	InitAggregation();
-
-//  Exe Server : Initialize
-	hExeServerLib = LoadLibrary(TEXT("..\\04_ExeServer\\Client\\DLL\\ExeClient.dll"));	
-	if (hExeServerLib == NULL)
-		MessageBox(NULL, TEXT("Bare Client : LoadServers : ExeServer : Error"), TEXT("Error"), NULL);
-
-	fPtr InitExeServer;
-	InitExeServer = (fPtr)GetProcAddress(hExeServerLib, "Initialize");
-	InitExeServer();
-
-// 	Automation : Initialize
-	hAutomationLib = LoadLibrary(TEXT("..\\05_Automation\\Client\\DLL\\AutomationClient.dll"));	
-	if (hAutomationLib == NULL)
-		MessageBox(NULL, TEXT("Bare Client : LoadServers : Automation : Error"), TEXT("Error"), NULL);
-
-	fPtr InitAutomationServer;
-	InitAutomationServer = (fPtr)GetProcAddress(hAutomationLib, "Initialize");
-	InitAutomationServer();
-
-// 	Moniker : Initialize
-	hMonikerLib = LoadLibrary(TEXT("..\\06_Moniker\\Client\\DLL\\MonikerClient.dll"));	
-	if (hMonikerLib == NULL)
-		MessageBox(NULL, TEXT("Bare Client : LoadServers : Moniker : Error"), TEXT("Error"), NULL);
-
-	fPtr InitMonikerServer;
-	InitMonikerServer = (fPtr)GetProcAddress(hMonikerLib, "Initialize");
-	InitMonikerServer();
-
-}
-
-void FreeServers(void)
-{
-	typedef void(*fPtr)(void);
-
-//  ClassFactory
-	fPtr UnInitClassFactory;
-	UnInitClassFactory = (fPtr)GetProcAddress(hClassFactoryLib, "UnInitialize");
-	UnInitClassFactory();
-
-	FreeLibrary(hClassFactoryLib);
-
-//  Containment
-	fPtr UnInitContainment;
-	UnInitContainment = (fPtr)GetProcAddress(hContainmentLib, "UnInitialize");
-	UnInitContainment();
-
-	FreeLibrary(hContainmentLib);
-
-//  Aggregation
-	fPtr UnInitAggregation;
-	UnInitAggregation = (fPtr)GetProcAddress(hAggregationLib, "UnInitialize");
-	UnInitAggregation();
-
-	FreeLibrary(hAggregationLib);
-
-// 	ExeServer
-	fPtr UnInitExeServer;
-	UnInitExeServer = (fPtr)GetProcAddress(hExeServerLib, "UnInitialize");
-	UnInitExeServer();
-
-	FreeLibrary(hExeServerLib);	
-
-//  Automation 
-	fPtr UnInitAutomation;
-	UnInitAutomation = (fPtr)GetProcAddress(hAutomationLib, "UnInitialize");
-	UnInitAutomation();
-
-	FreeLibrary(hAutomationLib);	
-
-// 	Moniker
-	fPtr UnInitMoniker;
-	UnInitMoniker = (fPtr)GetProcAddress(hMonikerLib, "UnInitialize");
-	UnInitMoniker();
-
-	FreeLibrary(hMonikerLib);	
-}

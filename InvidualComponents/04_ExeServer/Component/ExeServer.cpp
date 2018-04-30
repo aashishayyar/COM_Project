@@ -17,6 +17,8 @@ HWND  ghwnd = NULL;
 DWORD dwRegister;
 HRESULT hr;
 
+HANDLE hMutex = NULL;
+
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 class CSumSubtract : public ISum, ISubtract
@@ -59,6 +61,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	void 	StopMyClassFactory	 (void);
 	DWORD 	GetParentProcessID	 (void);
 
+	if (hMutex != NULL)
+	{
+		return 0;
+	}
+	else
+	{
+		hMutex = CreateMutex(NULL, FALSE, "ExeServerComProjectSingleInstance");
+		if (hMutex == NULL)
+		{	
+			MessageBox(NULL, TEXT("Failed to create mutex for Exe Server"), TEXT("Exe Server : Error"), NULL);
+			
+		}
+	}
+
 	WNDCLASSEX 	wndclass;
 	MSG 		msg;
 	HWND 		hwnd;
@@ -72,7 +88,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	// MessageBox(NULL, TEXT("ExeServer : WinMain : Entered"), TEXT("ExeServer : Log"), NULL);
 
-	// MessageBox(NULL, lpCmdLine, TEXT("ExeServer : Log : lpCmdLine"), NULL);
+	MessageBox(NULL, lpCmdLine, TEXT("ExeServer : Log : lpCmdLine"), NULL);
 
 	MultiByteToWideChar(CP_ACP, 0, lpCmdLine, 255, lpszCmdLine, 255);
 
@@ -102,6 +118,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			iDontShowWindow = 1;
 			break;
 		}
+		else 
+			return 0;
 
 		lpszTokens = wcstok_s(NULL, szTokens, &next_token);
 	}

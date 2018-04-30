@@ -21,13 +21,15 @@ ISubtract		*pISubtract			= NULL;
 
 BOOL WINAPI DllMain(HINSTANCE hDll, DWORD dwReason, LPVOID Reserved)
 {
-	void	InitializeDefaultInterface(void);
+	void	Initialize(void);
+	void 	UnInitialize(void);
 	void 	SafeInterfaceRelease(void);
 
 	switch(dwReason)
 	{
 		case DLL_PROCESS_ATTACH:
 				ghModule = hDll;
+				Initialize();
 			break;
 		case DLL_THREAD_ATTACH:
 			break;
@@ -35,6 +37,8 @@ BOOL WINAPI DllMain(HINSTANCE hDll, DWORD dwReason, LPVOID Reserved)
 			break; 	
 		case DLL_PROCESS_DETACH:
 				CoUninitialize();
+				UnInitialize();
+				SafeInterfaceRelease();
 			break;		
 	}
 	return(TRUE);
@@ -88,12 +92,11 @@ void Initialize(void)
 
 	WaitForSingleObject( pInfo.hProcess, INFINITE);
     CloseHandle( pInfo.hProcess );
-
-	InitializeDefaultInterface();
 }
 
 void UnInitialize(void)
 {
+	void UnRegisterProxyStubDLL(void);
 	void SafeInterfaceRelease(void);
 	
 	HINSTANCE hLib;
@@ -123,6 +126,8 @@ void UnInitialize(void)
     CloseHandle( pInfo.hProcess );
 
 	CoUninitialize();
+
+	UnRegisterProxyStubDLL();
 
 	SafeInterfaceRelease();	
 }
@@ -218,10 +223,10 @@ void UnRegisterProxyStubDLL()
 	typedef HRESULT (*FuncPtr)(void);
 	FuncPtr UnRegisterServer;
 
-	hLib = LoadLibrary(TEXT("ProxyStub.dll"));
+	hLib = LoadLibrary(TEXT("..\\04_ExeServer\\Component\\ProxyStub\\ProxyStub.dll"));
 	if (hLib == NULL)
 	{
-		MessageBox(NULL, TEXT("Exe Server Client : UnRegisterProxyStubDLL : Cannot register ProxyStubDLL"), 
+		MessageBox(NULL, TEXT("Exe Server Client : UnRegisterProxyStubDLL : Cannot unregister ProxyStubDLL"), 
 					TEXT("Error"), NULL);
 		exit(0);
 	}

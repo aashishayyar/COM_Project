@@ -22,19 +22,23 @@ ISub *pISubtract = NULL;
 
 BOOL WINAPI DllMain(HINSTANCE hDll, DWORD dwReason, LPVOID Reserved)
 {
-	void	InitializeDefaultInterface(void);
+	void	Initialize(void);
 	void 	SafeInterfaceRelease(void);
+	void 	UnInitialize(void);
 
 	switch(dwReason)
 	{
 		case DLL_PROCESS_ATTACH:
 				ghModule = hDll;
+				Initialize();
 			break;
 		case DLL_THREAD_ATTACH:
 			break;
 		case DLL_THREAD_DETACH:
 			break; 	
 		case DLL_PROCESS_DETACH:
+				UnInitialize();
+				SafeInterfaceRelease();	
 				CoUninitialize();
 			break;		
 	}
@@ -79,10 +83,7 @@ void Initialize(void)
 	}	
 //	MessageBox(NULL, TEXT("ClassFactoryClient : Initialize : CoInitialize succesful"), TEXT("ClassFactory"), NULL);			
 
-	InitializeDefaultInterface();
-
 //	MessageBox(NULL, TEXT("ClassFactoryClient : Initialize : Leaving"), TEXT("Leaving"), NULL);
-
 }
 
 void UnInitialize(void)
@@ -105,8 +106,6 @@ void UnInitialize(void)
 	{
 		MessageBox(NULL, TEXT("Class Factory UnInitialization Failed"), TEXT("Error"), NULL);
 	}
-
-	SafeInterfaceRelease();	
 }
 
 int SumOfTwoIntegers(int iNum1, int iNum2)
