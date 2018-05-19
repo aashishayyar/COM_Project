@@ -1,0 +1,5 @@
+LIBRARY MonikerClient.dll
+EXPORTS
+	Initialize			PRIVATE
+	UnInitialize		PRIVATE
+	GetNextOddNumber	PRIVATE

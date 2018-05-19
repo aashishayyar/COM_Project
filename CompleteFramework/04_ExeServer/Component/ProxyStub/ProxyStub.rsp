@@ -1,0 +1,6 @@
+/h	ProxyStub.h
+/iid ProxyStubGuids.c
+/dlldata ProxyStubDllData.c
+/proxy ProxyStub.c
+/out C:\Users\Veni\Documents\Aashish\GIT\COM_Project\InvidualComponents\05_ExeServer\SERVER\
+C:\Users\Veni\Documents\Aashish\GIT\COM_Project\InvidualComponents\05_ExeServer\SERVER\ProxyStub.idl

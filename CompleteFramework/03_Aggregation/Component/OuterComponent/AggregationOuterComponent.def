@@ -1,0 +1,7 @@
+LIBRARY AggregationOuterComponent
+EXPORTS
+	DllGetClassObject	PRIVATE
+	DllCanUnloadNow		PRIVATE
+	DllRegisterServer	PRIVATE
+	DllUnRegisterServer	PRIVATE
+	

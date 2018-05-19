@@ -1,0 +1,5 @@
+LIBRARY ExeClient.dll
+EXPORTS 
+	SumOfTwoIntegers			PRIVATE
+	SubtractionOfTwoIntegers	PRIVATE
+	

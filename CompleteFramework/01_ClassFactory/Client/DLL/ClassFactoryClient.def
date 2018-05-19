@@ -1,0 +1,6 @@
+LIBRARY ClassFactoryClient.dll
+EXPORTS
+	SumOfTwoIntegers			PRIVATE
+	SubtractionOfTwoIntegers	PRIVATE
+
+	
